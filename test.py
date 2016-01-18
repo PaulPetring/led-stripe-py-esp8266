@@ -9,16 +9,14 @@ Wenn alles glatt läuft, müsste die Lichterkette komplett in rot erleuchten.
 
 from led_stripe_py import LED_Stripe, LED_Stripe_Datagram, LED # Alles aus der LED-Stripe-Lib importieren
 import math # Importiere natives Math-Modul
-import matplotlib.cm as cm
 
 HOST_NAME = "192.168.1.100"
 PORT = 2342
 
 led_stripe = LED_Stripe(HOST_NAME, PORT) # Erzeuge Lichterkette mit diesem Host und Port
-colors = cm.rainbow(np.linspace(0, 1, len(150)))
 
 leds = [] # Hier kommen die LEDs rein *-*
-for i in range(0,150): #Für 226 LEDs
+for i in range(0,150): #Für 150 LEDs
     led = LED(0xff, 0xff, 0x00) #Setze LED rot
     leds.append(led) 
 
