@@ -1,3 +1,5 @@
+#!/usr/local/bin/python
+# coding: UTF-8
 """
 Ein kleines Test-Programm für die kleine LED-Stripe-Library.
 Wenn alles glatt läuft, müsste die Lichterkette komplett in rot erleuchten.
@@ -7,18 +9,20 @@ Wenn alles glatt läuft, müsste die Lichterkette komplett in rot erleuchten.
 
 from led_stripe_py import LED_Stripe, LED_Stripe_Datagram, LED # Alles aus der LED-Stripe-Lib importieren
 import math # Importiere natives Math-Modul
+import matplotlib.cm as cm
 
-HOST_NAME = "172.22.99.206"
+HOST_NAME = "192.168.1.100"
 PORT = 2342
 
 led_stripe = LED_Stripe(HOST_NAME, PORT) # Erzeuge Lichterkette mit diesem Host und Port
+colors = cm.rainbow(np.linspace(0, 1, len(150)))
 
 leds = [] # Hier kommen die LEDs rein *-*
-for i in range(0,226): #Für 226 LEDs
-    led = LED(0xff, 0x00, 0x00) #Setze LED rot
+for i in range(0,150): #Für 226 LEDs
+    led = LED(0xff, 0xff, 0x00) #Setze LED rot
     leds.append(led) 
 
-datagram = LED_Stripe_Datagram(priority=0x01, command=0x00, leds=leds) # Erzeuge Datagram mit Priorität 255, (seeeeehr hoch) Kommando 0 (Setze LED-Farben) und den ganzen LEDs, die wir definiert haben
+datagram = LED_Stripe_Datagram(priority=0x00, command=0x00, leds=leds) # Erzeuge Datagram mit Priorität 255, (seeeeehr hoch) Kommando 0 (Setze LED-Farben) und den ganzen LEDs, die wir definiert haben
 
 while True:
     led_stripe.send(datagram) # Sende Datagram an Lichterkette

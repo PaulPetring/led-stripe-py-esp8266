@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*- 
+
 """
 Eine kleine Bibliothek für die LED-Stripe im HQ. (https://wiki.c3d2.de/LED-Stripe)
 Damit sollte diese jetzt mit wenig Aufwand programmierbar sein.
@@ -15,7 +18,7 @@ class LED_Stripe: # Lichterkette
         self.port = port # Merke Port
     
     def send(self, datagram): # Datagram versenden
-        self.socket.sendto(bytes(datagram.getData()), (self.host, self.port)) # Sende Datagram mitels UDP-Socket an Host-Name:Port
+        self.socket.sendto("".join(datagram.getData()), (self.host, self.port)) # Sende Datagram mitels UDP-Socket an Host-Name:Port
     
 class LED_Stripe_Datagram: # Datagram
     def __init__(self, priority=0xff, command=0x00, leds=[]): # Konstruktor nimmt Priorität (1 Byte), Kommando (1 Byte; 0 zum Setzen von LED-Farbe) und Array mit LEDs
@@ -30,13 +33,14 @@ class LED_Stripe_Datagram: # Datagram
         
         formattedLen = bytes(pack('i', len(led_data))) # Länge der LED-Bytes in Network Byte Order formatieren
         data = [
-            self.priority, # Byte 0: Priorität
-            self.command, # Byte 1: Kommando
-            formattedLen[1], # Bytes 2 & 3: Länge der folgenden Daten in Network Byte Order
-            formattedLen[0]
+            pack('b',self.priority), # Byte 0: Priorität
+            pack('b',self.command), # Byte 1: Kommando
+            pack('!h',len(led_data)), #formattedLen[1], # Bytes 2 & 3: Länge der folgenden Daten in Network Byte Order
+            #formattedLen[0]
         ]
         data = data + led_data # Füge LED-Bytes zu Byte-Block hinzu
-        return data # Gib Byte-Block zurück
+        #print data
+	return data # Gib Byte-Block zurück
 
 class LED: # Leuchtdiode (LED)
     def __init__(self, r, g, b): # Konstruktor nimmt 8 Bit rot, 8 Bit grün, 8 Bit blau
@@ -45,9 +49,9 @@ class LED: # Leuchtdiode (LED)
         self.b = b # Merke Blau-Wert
 
     def getData(self): # Liefert Daten im richtigen Byte-Format
-        data = [ # Ja, BGR ist Absicht, stand so in der Dokumentation... Ô.ô
-            self.b, # Byte 0: Blau-Wert
-            self.g, # Byte 1: Grün-Wert
-            self.r  # Byte 2: Rot-Wert
+        data = [ 
+            pack('B',self.r), # Byte 0: Blau-Wert
+            pack('B',self.g), # Byte 1: Grün-Wert
+            pack('B',self.b)  # Byte 2: Rot-Wert
         ]
         return data

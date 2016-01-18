@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*- 
+
 """
 Ein kleines Zug-Programm für die kleine LED-Stripe-Library.
 Wenn alles glatt läuft, müsste ein roter Zug in Endlosschleife hin- und herfahren.
@@ -10,25 +13,21 @@ import math # Importiere natives Math-Modul
 import time # Importiere natives Time-Modul
 import random
 
-HOST_NAME = "172.22.99.206"
+HOST_NAME = "192.168.1.100"
 PORT = 2342
 
 led_stripe = LED_Stripe(HOST_NAME, PORT) # Erzeuge Lichterkette mit diesem Host und Port
 
 leds = []
 
-for i in range(0,20):
-    led = LED(0x00, 0x00, 0xff)
-    leds.append(led)
-
-for i in range(0,206): 
+for i in range(0,150): 
     led = LED(0x00,0x00,0x00) 
     leds.append(led)
 
 datagram = LED_Stripe_Datagram(priority=0xff, command=0x00, leds=leds)
 
 happy_colors = [
-    [0xff, 0x00, 0x00],
+    [0xff, 0xcc, 0x00],
     [0x00, 0xff, 0x00],
     [0x00, 0x00, 0xff],
     [0xff, 0xff, 0x00]
@@ -39,34 +38,28 @@ def randColor():
     return happy_colors[randomNum-1]
 
 position = 0
-train_length = 30
+train_length = 5
 vorwaerts = True
 while True:
     leds = []
     color = randColor()
-    for i in range(0,20):
-        if i == (position % 20) or i==20-(position % 20):
-            led = LED(color[0], color[1], color[2])
-        else:
-            led = LED(0x00, 0x00, 0x00)
-        leds.append(led)
 
     for i in range(0, position):
         led = LED(0x00,0x00,0x00)
         leds.append(led)
 
     for i in range(0,train_length):
-        led = LED(0xff-math.ceil(0xff/train_length*i), 0x00, 0x00+math.ceil(0xff/train_length*i))
+        led = LED(0xff, 0xcc, 0x00)
         leds.append(led)
     
-    for i in range(0, 206-(position+train_length)):
+    for i in range(0, 150-(position+train_length)):
         led = LED(0x00, 0x00, 0x00)
         leds.append(led)
     
 
-    datagram = LED_Stripe_Datagram(priority=0xff, command=0x00, leds=leds)
+    datagram = LED_Stripe_Datagram(priority=0x0, command=0x00, leds=leds)
     led_stripe.send(datagram)
-    if (206 - train_length == position and vorwaerts) or (position == 0 and not vorwaerts):
+    if (150 - train_length == position and vorwaerts) or (position == 0 and not vorwaerts):
         vorwaerts = not vorwaerts
 
     if vorwaerts:    
